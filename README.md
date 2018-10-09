@@ -28,6 +28,11 @@ PozyxSerial port = new PozyxSerial(PozyxSerial.getFirstPozyxSerialPort());
 * You can quickly find whether there's a recognized Pozyx device using `PozyxSerial.getFirstPozyxSerialPort()`
 
 ## Examples 
+
+There is an [example java application](https://github.com/kzkyuta/Pozyx-Java-Library/blob/master/pozyx_app/src/main/java/com/kzk/apps/Main.java). you can download it, and run to see how this library works. 
+
+Also the below, there are some explanation how it works. 
+
 * To check the Farmware Version run below
 
 ```java 
@@ -47,7 +52,7 @@ port.setLed(2, false);
 ```java 
 Data ACCdata = new Data();  // build a container for ACC data.
 port.getACCData(ACCdata);  // receive the data from pozyx
-System.out.println(ACCdata.getData());   / out put the data, and the data type is Integer.
+System.out.println(ACCdata.getData());   // out put the data, and the data type is Integer.
 ```
 
 ## References

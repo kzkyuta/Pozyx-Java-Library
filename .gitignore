@@ -4,6 +4,7 @@
 .project
 .settings
 .gradle
+.metadata
 
 bin
 gradle

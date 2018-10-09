@@ -1,4 +1,4 @@
-package definitions;
+package com.kzk.libs.definitions;
 
 public class Registers {
 	public static final byte WHO_AM_I = 0x0; // Returns the constant value 0x43.

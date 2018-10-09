@@ -8,7 +8,8 @@ import com.kzk.libs.structures.generic.DeviceDetailes;
 import com.kzk.libs.structures.generic.Generic;
 import com.kzk.libs.structures.generic.SingleRegister;
 
-import definitions.Registers;
+import com.kzk.libs.definitions.Constants;
+import com.kzk.libs.definitions.Registers;;
 
 public class Main {
 

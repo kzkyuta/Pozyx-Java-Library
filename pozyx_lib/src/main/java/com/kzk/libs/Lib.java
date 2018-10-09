@@ -11,9 +11,8 @@ import com.kzk.libs.structures.generic.UWBSetting;
 
 import java.util.logging.Logger;
 
-
-import definitions.Constants;
-import definitions.Registers;
+import com.kzk.libs.definitions.Constants;
+import com.kzk.libs.definitions.Registers;;
 
 public abstract class Lib extends Core {
 	public static final Logger LOGGER = Logger.getLogger(PozyxSerial.class.getName()); // TODO: confirm

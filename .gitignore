@@ -1,0 +1,16 @@
+*.bat
+
+.classpath
+.project
+.settings
+.gradle
+
+bin
+gradle
+gradlew
+
+/pozyx_app/build/*
+!/pozyx_app/build/install
+
+/pozyx_lib/build/*
+!/pozyx_lib/build/libs

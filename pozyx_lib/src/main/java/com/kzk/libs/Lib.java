@@ -3,16 +3,15 @@ package com.kzk.libs;
 import javax.print.attribute.ResolutionSyntax;
 import javax.swing.SpringLayout.Constraints;
 
-import com.kzk.libs.structures.generic.Data;
-import com.kzk.libs.structures.generic.Generic;
-import com.kzk.libs.structures.generic.NetworkId;
-import com.kzk.libs.structures.generic.SingleRegister;
-import com.kzk.libs.structures.generic.UWBSetting;
-
 import java.util.logging.Logger;
 
 import com.kzk.libs.definitions.Constants;
-import com.kzk.libs.definitions.Registers;;
+import com.kzk.libs.definitions.Registers;
+import com.kzk.libs.structures.Data;
+import com.kzk.libs.structures.Generic;
+import com.kzk.libs.structures.NetworkId;
+import com.kzk.libs.structures.SingleRegister;
+import com.kzk.libs.structures.UWBSetting;;
 
 public abstract class Lib extends Core {
 	public static final Logger LOGGER = Logger.getLogger(PozyxSerial.class.getName()); // TODO: confirm

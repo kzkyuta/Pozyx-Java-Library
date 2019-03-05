@@ -1,4 +1,4 @@
-package com.kzk.libs.structures.generic;
+package com.kzk.libs.structures;
 
 //public abstract class Data extends ByteStructure {
 public class Data extends ByteStructure {

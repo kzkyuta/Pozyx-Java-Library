@@ -3,13 +3,11 @@ package com.kzk.apps;
 import java.util.ArrayList;
 
 import com.kzk.libs.PozyxSerial;
-import com.kzk.libs.structures.generic.Data;
-import com.kzk.libs.structures.generic.DeviceDetailes;
-import com.kzk.libs.structures.generic.Generic;
-import com.kzk.libs.structures.generic.SingleRegister;
-
 import com.kzk.libs.definitions.Constants;
-import com.kzk.libs.definitions.Registers;;
+import com.kzk.libs.definitions.Registers;
+import com.kzk.libs.structures.Data;
+import com.kzk.libs.structures.DeviceDetailes;
+import com.kzk.libs.structures.Generic;
 
 public class Main {
 

@@ -15,3 +15,5 @@ gradlew
 
 /pozyx_lib/build/*
 !/pozyx_lib/build/libs
+
+*.DS_Store

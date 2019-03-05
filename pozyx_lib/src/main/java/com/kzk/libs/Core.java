@@ -1,6 +1,6 @@
 package com.kzk.libs;
 
-import com.kzk.libs.structures.generic.Data;
+import com.kzk.libs.structures.Data;
 
 
 public abstract class Core {

@@ -1,4 +1,4 @@
-package com.kzk.libs.structures.generic;
+package com.kzk.libs.structures;
 
 public class DeviceDetailes extends Data{
 	public String id;

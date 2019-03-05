@@ -1,4 +1,4 @@
-package com.kzk.libs.structures;
+package com.kzk.libs.structures.generic;
 
 /*
  * pypozyx.structures.generic - introduces generic data structures derived from ByteStructure

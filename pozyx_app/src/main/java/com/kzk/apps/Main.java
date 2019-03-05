@@ -7,7 +7,7 @@ import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
 import com.kzk.libs.structures.Data;
 import com.kzk.libs.structures.DeviceDetailes;
-import com.kzk.libs.structures.Generic;
+import com.kzk.libs.structures.generic.Generic;
 
 public class Main {
 

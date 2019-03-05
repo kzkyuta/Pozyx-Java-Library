@@ -1,8 +1,9 @@
-package com.kzk.libs.structures;
+package com.kzk.libs.structures.device;
 
 import java.util.ArrayList;
+import com.kzk.libs.structures.ByteStructure;
 
-public class UWBSetting extends ByteStructure {
+public class UWBSettings extends ByteStructure {
 	
 	public static final byte DEFAULT_CHANNNEL = 0x05;
 	public static final byte DEFAULT_BITRATE = 0x01; // 0: 110kbits/s, 1: 850kbits/s(Default), 2: 6.8Mbits/s

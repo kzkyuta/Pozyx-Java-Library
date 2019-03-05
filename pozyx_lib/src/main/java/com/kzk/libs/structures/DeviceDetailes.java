@@ -1,5 +1,13 @@
 package com.kzk.libs.structures;
 
+import com.kzk.libs.structures.generic.Generic;
+
+/*
+ * Container for system information, such as firmware, hardware...
+
+    Read-only, so all values are implemented as properties.
+ */
+
 public class DeviceDetailes extends Data{
 	public String id;
 	public DeviceDetailes() {

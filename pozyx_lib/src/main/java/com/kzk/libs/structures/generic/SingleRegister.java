@@ -1,4 +1,6 @@
-package com.kzk.libs.structures;
+package com.kzk.libs.structures.generic;
+
+import com.kzk.libs.structures.Data;
 
 public class SingleRegister extends Data {
 	

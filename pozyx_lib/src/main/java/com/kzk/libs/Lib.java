@@ -8,10 +8,10 @@ import java.util.logging.Logger;
 import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
 import com.kzk.libs.structures.Data;
-import com.kzk.libs.structures.Generic;
-import com.kzk.libs.structures.NetworkId;
-import com.kzk.libs.structures.SingleRegister;
-import com.kzk.libs.structures.UWBSetting;;
+import com.kzk.libs.structures.generic.Generic;
+import com.kzk.libs.structures.device.NetworkID;
+import com.kzk.libs.structures.generic.SingleRegister;
+import com.kzk.libs.structures.device.UWBSettings;
 
 public abstract class Lib extends Core {
 	public static final Logger LOGGER = Logger.getLogger(PozyxSerial.class.getName()); // TODO: confirm
@@ -51,12 +51,12 @@ public abstract class Lib extends Core {
 	public void printDeviceInfo(String remoteId) {
 		SingleRegister firmware = new SingleRegister();
 		int status = getFirmwareVersion(firmware, remoteId);
-		NetworkId networkId; 
+		NetworkID networkId; 
 		if(remoteId == "None") {
-			networkId = new NetworkId();
+			networkId = new NetworkID();
 			this.getNetworkId(networkId);
 		} else {
-			networkId = new NetworkId(remoteId);
+			networkId = new NetworkID(remoteId);
 		}
 		System.out.println("Device Information for device " + networkId.id);
 		if(status != Constants.POZYX_SUCCESS) {
@@ -67,7 +67,7 @@ public abstract class Lib extends Core {
 		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
 	}
 	
-	public int getNetworkId(NetworkId networkId) {  // 
+	public int getNetworkId(NetworkID networkId) {  // 
 		return regRead(Registers.NETWORK_ID, networkId);
 	}
 	
@@ -111,7 +111,7 @@ public abstract class Lib extends Core {
 	
 	public abstract int setWrite(byte address, Data data, String remoteId, double localDelay, double remoteDelay);
 	
-	public void setUWBSetting(UWBSetting uwbSetting, String remoteId, boolean saveToFlash) {
+	public void setUWBSetting(UWBSettings uwbSetting, String remoteId, boolean saveToFlash) {
 		
 		Data gainRegister = new Data(String.valueOf(uwbSetting.gain_db));
 		Data uwbRegisters = new Data(String.valueOf(uwbSetting.channnel) + String.valueOf(uwbSetting.bitrate + (uwbSetting.prf << 6)));

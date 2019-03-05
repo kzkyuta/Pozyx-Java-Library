@@ -17,3 +17,5 @@ gradlew
 !/pozyx_lib/build/libs
 
 *.DS_Store
+*.gitignore
+*.jar

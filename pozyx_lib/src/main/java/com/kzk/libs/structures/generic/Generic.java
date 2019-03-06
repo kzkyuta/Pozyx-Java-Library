@@ -60,5 +60,9 @@ public class Generic {
 	   }
 	   return data;
 	}
+	public static boolean dataCheck(Data data) {
+		
+		return true;
+	}
 
 }

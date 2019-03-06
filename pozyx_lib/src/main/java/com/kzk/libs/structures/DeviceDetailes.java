@@ -1,6 +1,7 @@
 package com.kzk.libs.structures;
 
 import com.kzk.libs.structures.generic.Generic;
+import com.kzk.libs.structures.generic.Data;
 
 /*
  * Container for system information, such as firmware, hardware...
@@ -15,6 +16,7 @@ public class DeviceDetailes extends Data{
 	}
 	
 	public String firmware_version_string() {
+//		System.out.println(this.getData()) -> 4313023000
 		byte[] firmware = Generic.hexStringToByteArray(this.getData().substring(2, 4));
 //		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
 		return "\t- Farmware Version is v" + (firmware[0] >> 4) + "." + (firmware[0] % 0x10);

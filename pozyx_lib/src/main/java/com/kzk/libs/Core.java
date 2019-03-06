@@ -1,6 +1,7 @@
 package com.kzk.libs;
 
-import com.kzk.libs.structures.Data;
+import com.kzk.libs.structures.ByteStructure;
+import com.kzk.libs.structures.generic.Data;
 
 
 public abstract class Core {
@@ -18,5 +19,10 @@ public abstract class Core {
 	abstract void waitForFlag(boolean interruptFlag, float timeoutS, boolean interrupt);
 	
 	abstract int useFunction(byte function, Data params, Data data, String remoteId);
-
+	
+	abstract int clearInterruptStatus();
+	
+	abstract int getInterruptStatus(Data interrupt, String remoteId);
+	
+//	abstract int getRead(byte address, Data data, String remoteId);
 }

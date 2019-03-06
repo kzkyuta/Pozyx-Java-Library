@@ -4,14 +4,18 @@ import javax.print.attribute.ResolutionSyntax;
 import javax.swing.SpringLayout.Constraints;
 
 import java.util.logging.Logger;
+import java.util.Date;
 
 import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
-import com.kzk.libs.structures.Data;
-import com.kzk.libs.structures.generic.Generic;
+import com.kzk.libs.definitions.Bitmasks;
+import com.kzk.libs.structures.generic.Data;
 import com.kzk.libs.structures.device.NetworkID;
-import com.kzk.libs.structures.generic.SingleRegister;
 import com.kzk.libs.structures.device.UWBSettings;
+import com.kzk.libs.structures.device.DeviceRange;
+import com.kzk.libs.structures.generic.Generic;
+import com.kzk.libs.structures.generic.SingleRegister;
+
 
 public abstract class Lib extends Core {
 	public static final Logger LOGGER = Logger.getLogger(PozyxSerial.class.getName()); // TODO: confirm
@@ -124,5 +128,49 @@ public abstract class Lib extends Core {
 	public int getACCData(Data data, String remoteId) {
 		data.setDataSize(6);
 		return this.getRead(Registers.ACCELERATION_X, data, remoteId);
+	}
+	
+	public void doRanging(Data destinationId, Data deviceRange, String remoteId) {
+		int intFlag;
+		NetworkID netWorkId = new NetworkID(destinationId);
+		this.clearInterruptStatus();
+		
+		
+		if(remoteId.equals("None")) {
+			intFlag = Bitmasks.INT_STATUS_FUNC;
+		}else {
+			intFlag = Bitmasks.INT_STATUS_RX_DATA;
+		}
+		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
+		if(status == Constants.POZYX_SUCCESS) {
+			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
+		}
+		
+	}
+
+	protected int checkForFlag(int interruptFlag, double timeout_s, Data interrupt) {
+		if(interrupt == null) {
+			interrupt = new SingleRegister();
+		}
+		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
+		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
+			
+		}
+		return 0;
+	}
+
+	private boolean waitForFlagState(int interruptFlag, double timeout_s, Data interrupt) {
+		// TODO 自動生成されたメソッド・スタブ
+		if(interrupt == null) {
+			interrupt = new SingleRegister(); 
+		}
+		long start = System.currentTimeMillis();
+		while(start - System.currentTimeMillis() < timeout_s) {
+			int status = getInterruptStatus(interrupt, "None");
+			if(interrupt.getData(0) &) {
+				
+			}
+		}
+		return false;
 	}
 }

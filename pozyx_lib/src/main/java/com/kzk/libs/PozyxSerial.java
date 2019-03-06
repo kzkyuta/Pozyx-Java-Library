@@ -14,7 +14,8 @@ import java.util.Objects;
 import com.fazecast.jSerialComm.SerialPort;
 import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
-import com.kzk.libs.structures.Data;
+import com.kzk.libs.structures.ByteStructure;
+import com.kzk.libs.structures.generic.Data;
 import com.kzk.libs.structures.DeviceDetailes;
 import com.kzk.libs.structures.generic.Generic;
 import com.kzk.libs.structures.generic.SingleRegister;;
@@ -223,11 +224,16 @@ public class PozyxSerial extends Lib {
 
 	@Override
 	public int regRead(byte address, Data data) {
+		/*
+		 * Reads data from the Pozyx registers, starting at a register address,
+        	if registers are readable.
+		 */
 		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
 		String result = serialExchanging(newData);  // send a readMessage, and get a response.
-		
+		System.out.println(newData);
+
 		data.setData(result); // update the data
-		return Constants.POZYX_SUCCESS;  // // TODO: implement try catch
+		return Constants.POZYX_SUCCESS;  // TODO: implement try catch
 	}
 	
 	@Override
@@ -276,6 +282,15 @@ public class PozyxSerial extends Lib {
 		}else {
 			return this.regRemoteFunction(remoteId, function, params, data);
 		}
+	}
+	
+	public int clearInterruptStatus() {
+		SingleRegister interrupt = new SingleRegister();
+		return getInterruptStatus(interrupt, "None");
+	}
+	
+	public int getInterruptStatus(Data interrupt, String remoteId) {
+		return getRead(Registers.INTERRUPT_STATUS, interrupt, remoteId);
 	}
 	
 	public int regRemoteFunction(String distination, byte adress, Data params, Data data) {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.kzk.libs.PozyxSerial;
 import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
-import com.kzk.libs.structures.Data;
+import com.kzk.libs.structures.generic.Data;
 import com.kzk.libs.structures.DeviceDetailes;
 import com.kzk.libs.structures.generic.Generic;
 

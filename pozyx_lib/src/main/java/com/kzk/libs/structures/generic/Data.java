@@ -6,7 +6,7 @@ import com.kzk.libs.structures.ByteStructure;
 public class Data extends ByteStructure {
 	
 	protected static String data = "";
-	protected static int dataSize = 0;
+	protected static int dataSize = 0;  // unit:byte
 	public String id = "None";
 
 	public Data() {
@@ -22,6 +22,10 @@ public class Data extends ByteStructure {
 
 	public String getData() {
 		return data;
+	}
+	
+	public String getData(int num) {
+		return data.subString(0, num*2);
 	}
 
 	public void setData(String data) {

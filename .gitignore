@@ -5,6 +5,7 @@
 .settings
 .gradle
 .metadata
+.jar
 
 bin
 gradle
@@ -15,3 +16,6 @@ gradlew
 
 /pozyx_lib/build/*
 !/pozyx_lib/build/libs
+
+.DS_Store
+

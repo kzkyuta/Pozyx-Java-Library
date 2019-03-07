@@ -97,8 +97,8 @@ public abstract class Lib extends Core {
 		if(!(1<= ledNum) || !(ledNum <= 4)) {  // for Anchor
 			LOGGER.severe("setLed: LED number " + ledNum + "not in range");
 		}
-		Data params = new SingleRegister();
-		Data data = new SingleRegister();
+		Data params = new SingleRegister();  // 1 byte info
+		Data data = new SingleRegister();  // 1 byte info: for receive return value from pozyx
 		
 		byte byteData;
 		if(state) {

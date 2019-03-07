@@ -201,20 +201,23 @@ public class PozyxSerial extends Lib {
 			LOGGER.severe("Connected to device, but couldn't read serial data. Is it a Pozyx?");
 		}
 //		System.out.println("DATA!!: " + data.getData());
-		if(!data.getData().equals("43")) {
-			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getData() + "something is wrong with Pozyx.");
+		if(!data.getData(0).equals("43")) {
+			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getData(0) + "something is wrong with Pozyx.");
 		}
 	}
 	
-	public String serialExchanging(String s) {
-		String outString = "";
-		String newString = s + NEW_LINE;
-		byte[] newStringB = newString.getBytes();
-	
-		this.ser.writeBytes(newStringB, newStringB.length);
+	public ArrayList<String> serialExchanging(String s) {
+		ArrayList<String> outString = new ArrayList<String>();
+		String newString = s + NEW_LINE;  // input data
+		
+		byte[] newStringB = newString.getBytes();  // cast input data to byte type 
+		this.ser.writeBytes(newStringB, newStringB.length); // send data.
 		
 		try {
-			outString = buffReader.readLine().substring(2);  // Delete the initial "D,"
+			String receivedData = buffReader.readLine(); // get received data, and Deleted the initial "D,"
+			for(int i = 0; i < receivedData.length()/2; i++) {
+				outString.add(receivedData.substring(i*2, i*2+2));
+			}
 		} catch (IOException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
@@ -224,10 +227,11 @@ public class PozyxSerial extends Lib {
 
 	@Override
 	public int regRead(byte address, Data data) {
+		// To make signal, input data is prepared with newData
 		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
-		String result = serialExchanging(newData);  // send a readMessage, and get a response.
+		ArrayList<String> result = serialExchanging(newData);  // send a readMessage, and get a response from Pozyx device.
 		
-		data.setData(result); // update the data
+		data.load(result); // update the data
 		return Constants.POZYX_SUCCESS;  // // TODO: implement try catch
 	}
 	

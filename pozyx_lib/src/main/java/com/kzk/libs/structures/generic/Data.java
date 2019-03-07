@@ -2,53 +2,49 @@ package com.kzk.libs.structures.generic;
 
 import java.util.ArrayList;
 
-//public abstract class Data extends ByteStructure {
+// this class can handle only a byte or two bytes data
 public class Data extends ByteStructure {
 	
-//	protected static String data = "";
 	protected static int dataSize = 0;
-	public String id = "None";
+	protected String id = "None";
 
 	public Data() {
-		
-	}
-	public Data(ArrayList<String> data) {
-		this(data, super.dataFormat);  // ここから
+//		this.data.add("");
+		this.dataFormat = "B";
+		this.setPackedSize();
 	}
 	
-	public Data(ArrayList<String> data, String format) {
+	public Data(String format) {
+//		this.data.add("");
+		this.dataFormat = format;
+		this.setPackedSize();
+	}
+	
+	// Stringのアレイデータを入力とするのは使えないんじゃない？
+	protected Data(ArrayList<String> data, String format) {
 		this.data = data;
 		this.dataFormat = format;
 		this.setPackedSize();
-		String newByteData = "";
-		for(int i = 0; i < dataFormat.length(); i++) {
-			newByteData += "00";
-		}
-		this.byteData = newByteData;
-		this.dataSize = dataFormat.length();
 	}
 
-	public String getData(int index) {
+	public String getValue(int index) {
 		return data.get(index);
 	}
 	
-	public void load(ArrayList<String> data) {
-		this.data = data;
+	@Override
+	public void load(ArrayList<String> receivedData) {
+		loadData(receivedData);  // received data tp this.data
 	}
+	
+	/////////
 
-	public void setData(String data) {
-		if(data.length() == 2) {
-			this.data.add(data);
-		}
-	}
-
-	public int getDataSize() {
-		return dataSize;
-	}
-
-	public void setDataSize(int dataSize) {
-		this.dataSize = dataSize;
-	}
+//	public int getDataSize() {
+//		return dataSize;
+//	}
+//
+//	public void setDataSize(int dataSize) {
+//		this.dataSize = dataSize;
+//	}
 	
 	public int getACCData(int a) {
 		if(this.data.size() != 6) {

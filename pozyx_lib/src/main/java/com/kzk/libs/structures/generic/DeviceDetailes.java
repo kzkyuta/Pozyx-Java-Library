@@ -1,20 +1,21 @@
 package com.kzk.libs.structures.generic;
 
 public class DeviceDetailes extends Data{
-	public String id;
+	// this class is used to get device information 
+	// like Pozyx identification ID 0x43, firmware version, hardware version
+	// internal self test result and error code.
+	
 	public DeviceDetailes() {
-		super("", 5);  // make data whose contents are none and the size is 1 byte
+		super("BBBBB");  // make data whose contents are none and the size is 1 byte
 	}
 	
 	public String firmware_version_string() {
-		byte[] firmware = Generic.hexStringToByteArray(this.getData().substring(2, 4));
-//		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
-		return "\t- Farmware Version is v" + (firmware[0] >> 4) + "." + (firmware[0] % 0x10);
+		return "\t- Farmware Version is v" + this.convetHalfByteToInt(1, 0)
+		+ "." + this.convetHalfByteToInt(1, 1);
 	}
 	
 	public String hardware_version_string() {
-		byte[] hardware = Generic.hexStringToByteArray(this.getData().substring(4, 6));
-		return "\t- Hardware Version is v1." + (hardware[0] % 0x10);
+		return "\t- Hardware Version is v1." + this.convetHalfByteToInt(2, 1);
 	}
 	
 }

@@ -196,13 +196,11 @@ public class PozyxSerial extends Lib {
 
 	public void validatePozyx() { // confirm if the received data is 43 or not.		
 		SingleRegister data = new SingleRegister();
-		
 		if (getWhoAmI(data) !=  Constants.POZYX_SUCCESS) {
 			LOGGER.severe("Connected to device, but couldn't read serial data. Is it a Pozyx?");
 		}
-//		System.out.println("DATA!!: " + data.getData());
-		if(!data.getData(0).equals("43")) {
-			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getData(0) + "something is wrong with Pozyx.");
+		if(!data.getValue(0).equals("43")) {
+			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getValue(0) + "something is wrong with Pozyx.");
 		}
 	}
 	
@@ -215,7 +213,7 @@ public class PozyxSerial extends Lib {
 		
 		try {
 			String receivedData = buffReader.readLine(); // get received data, and Deleted the initial "D,"
-			for(int i = 0; i < receivedData.length()/2; i++) {
+			for(int i = 1; i < receivedData.length()/2; i++) {
 				outString.add(receivedData.substring(i*2, i*2+2));
 			}
 		} catch (IOException e) {
@@ -228,7 +226,7 @@ public class PozyxSerial extends Lib {
 	@Override
 	public int regRead(byte address, Data data) {
 		// To make signal, input data is prepared with newData
-		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
+		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getByteSize());
 		ArrayList<String> result = serialExchanging(newData);  // send a readMessage, and get a response from Pozyx device.
 		
 		data.load(result); // update the data

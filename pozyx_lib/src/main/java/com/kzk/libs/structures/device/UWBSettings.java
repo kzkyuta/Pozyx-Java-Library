@@ -23,16 +23,9 @@ public class UWBSettings extends ByteStructure {
 //	protected ArrayList<byte> datas = new ArrayList<byte>();
 	public byte[] datas;
 
-	void UWBSetting() {
-		UWBSetting(DEFAULT_CHANNNEL, DEFAULT_BITRATE, DEFAULT_PRF, DEFAULT_PLEN, DEFAULT_GAIN_DB);
-	}
-	void UWBSetting(byte channnel, byte bitrate, byte prf, byte plen, double gain_db) {
-		this.channnel = channnel;
-		this.bitrate = bitrate;
-		this.prf = prf;
-		this.plen = plen;
-		this.gain_db = gain_db;
-//		this.datas = [this.channnel, this.bitrate, this.prf, this.plen, this.gain_db];
+	public void load(ArrayList<String> data) {
+		// TODO 自動生成されたメソッド・スタブ
+		
 	}
 
 }

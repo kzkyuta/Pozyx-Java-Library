@@ -196,25 +196,26 @@ public class PozyxSerial extends Lib {
 
 	public void validatePozyx() { // confirm if the received data is 43 or not.		
 		SingleRegister data = new SingleRegister();
-		
 		if (getWhoAmI(data) !=  Constants.POZYX_SUCCESS) {
 			LOGGER.severe("Connected to device, but couldn't read serial data. Is it a Pozyx?");
 		}
-//		System.out.println("DATA!!: " + data.getData());
-		if(!data.getData().equals("43")) {
-			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getData() + "something is wrong with Pozyx.");
+		if(!data.getValue(0).equals("43")) {
+			LOGGER.severe("POZYX_WHO_AM_I returned " + data.getValue(0) + "something is wrong with Pozyx.");
 		}
 	}
 	
-	public String serialExchanging(String s) {
-		String outString = "";
-		String newString = s + NEW_LINE;
-		byte[] newStringB = newString.getBytes();
-	
-		this.ser.writeBytes(newStringB, newStringB.length);
+	public ArrayList<String> serialExchanging(String s) {
+		ArrayList<String> outString = new ArrayList<String>();
+		String newString = s + NEW_LINE;  // input data
+		
+		byte[] newStringB = newString.getBytes();  // cast input data to byte type 
+		this.ser.writeBytes(newStringB, newStringB.length); // send data.
 		
 		try {
-			outString = buffReader.readLine().substring(2);  // Delete the initial "D,"
+			String receivedData = buffReader.readLine(); // get received data, and Deleted the initial "D,"
+			for(int i = 1; i < receivedData.length()/2; i++) {
+				outString.add(receivedData.substring(i*2, i*2+2));
+			}
 		} catch (IOException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
@@ -228,12 +229,12 @@ public class PozyxSerial extends Lib {
 		 * Reads data from the Pozyx registers, starting at a register address,
         	if registers are readable.
 		 */
-		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
-		String result = serialExchanging(newData);  // send a readMessage, and get a response.
-		System.out.println(newData);
-
-		data.setData(result); // update the data
-		return Constants.POZYX_SUCCESS;  // TODO: implement try catch
+		// To make signal, input data is prepared with newData
+		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getByteSize());
+		ArrayList<String> result = serialExchanging(newData);  // send a readMessage, and get a response from Pozyx device.
+		
+		data.load(result); // update the data
+		return Constants.POZYX_SUCCESS;  // // TODO: implement try catch
 	}
 	
 	@Override
@@ -254,12 +255,12 @@ public class PozyxSerial extends Lib {
 	}
 
 	@Override
-	public int regFunction(byte address, Data params, Data data){
-		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ params.getData() +","+ Integer.toString(params.getDataSize());
-		System.out.println(newData);
-		String result = serialExchanging(newData);
-		data.setData(result);
-		return Integer.parseInt(result.substring(0, 2), 16);  // TODO: implement try catch
+	public int regFunction(byte address, Data inputParams, Data data){
+		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ inputParams.getValue(0) +","+ Integer.toString(data.getDataSize());
+		System.out.println("Send Data:" + newData);
+		ArrayList<String> result = serialExchanging(newData);
+		data.load(result);
+		return Integer.parseInt(result.get(0), 16);  // TODO: implement try catch
 	}
 	
 	@Override
@@ -268,19 +269,19 @@ public class PozyxSerial extends Lib {
 	}
 	
 	@Override
-	public int useFunction(byte function, Data params, Data data, String remoteId) {
+	public int useFunction(byte function, Data inputParams, Data data, String remoteId) {
 		
 		if(!isFunctionCall(function)) {
 			if(!this.suppressWarnings) {  // TODO: what is suppressWarning ?
 				LOGGER.severe("Register " + function + " isn't a function register");
 			}
 		}
-//		params = (params == null) ? new SingleRegister() : params;
+		inputParams = (inputParams == null) ? new SingleRegister() : inputParams;
 //		data = (data == null) ?	new SingleRegister(): data;
 		if(remoteId.equals("None")) {
-			return this.regFunction(function, params, data);
+			return this.regFunction(function, inputParams, data);
 		}else {
-			return this.regRemoteFunction(remoteId, function, params, data);
+			return this.regRemoteFunction(remoteId, function, inputParams, data);
 		}
 	}
 	

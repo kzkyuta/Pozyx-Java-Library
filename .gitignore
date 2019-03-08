@@ -5,6 +5,7 @@
 .settings
 .gradle
 .metadata
+*.jar
 
 bin
 gradle

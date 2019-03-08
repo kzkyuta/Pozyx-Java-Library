@@ -15,7 +15,7 @@ import com.kzk.libs.structures.device.UWBSettings;
 import com.kzk.libs.structures.device.DeviceRange;
 import com.kzk.libs.structures.generic.Generic;
 import com.kzk.libs.structures.generic.SingleRegister;
-
+import com.kzk.libs.structures.generic.XYZ;
 
 public abstract class Lib extends Core {
 	public static final Logger LOGGER = Logger.getLogger(PozyxSerial.class.getName()); // TODO: confirm
@@ -52,24 +52,24 @@ public abstract class Lib extends Core {
 		return this.getRead(Registers.FIRMWARE_VERSION, firmware, remoteId);
 	}
 	
-	public void printDeviceInfo(String remoteId) {
-		SingleRegister firmware = new SingleRegister();
-		int status = getFirmwareVersion(firmware, remoteId);
-		NetworkID networkId; 
-		if(remoteId == "None") {
-			networkId = new NetworkID();
-			this.getNetworkId(networkId);
-		} else {
-			networkId = new NetworkID(remoteId);
-		}
-		System.out.println("Device Information for device " + networkId.id);
-		if(status != Constants.POZYX_SUCCESS) {
-			System.out.println("\t- Error: Couldn't retrieve device information");  // TODO: change to worning
-			return;
-		}
-		byte[] ver = Generic.hexStringToByteArray(firmware.getData());
-		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
-	}
+//	public void printDeviceInfo(String remoteId) {
+//		SingleRegister firmware = new SingleRegister();
+//		int status = getFirmwareVersion(firmware, remoteId);
+//		NetworkID networkId; 
+//		if(remoteId == "None") {
+//			networkId = new NetworkID();
+//			this.getNetworkId(networkId);
+//		} else {
+//			networkId = new NetworkID(remoteId);
+//		}
+//		System.out.println("Device Information for device " + networkId.id);
+//		if(status != Constants.POZYX_SUCCESS) {
+//			System.out.println("\t- Error: Couldn't retrieve device information");  // TODO: change to worning
+//			return;
+//		}
+//		byte[] ver = Generic.hexStringToByteArray(firmware.getData());
+//		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
+//	}
 	
 	public int getNetworkId(NetworkID networkId) {  // 
 		return regRead(Registers.NETWORK_ID, networkId);
@@ -80,7 +80,7 @@ public abstract class Lib extends Core {
 	}
 	public int getDeviceDetails(Data dDetails, String remoteId) {
 		int status = this.getWhoAmI(dDetails, remoteId);
-		if(dDetails.id.equals("None")) {  // TODO: Baptistに聞く
+//		if(dDetails.id.equals("None")) {  // TODO: Baptistに聞く
 //			if(remoteId.equals("None")) {
 //				NetworkId networkId = new NetworkId();
 //				status &= this.getNetworkId(networkId);
@@ -88,8 +88,8 @@ public abstract class Lib extends Core {
 //			}else {
 //				dDetails.id = remoteId;
 //			}
-		}
-		System.out.println(dDetails.id);
+//		}
+//		System.out.println(dDetails.id);
 		return status;
 	}
 	
@@ -100,8 +100,8 @@ public abstract class Lib extends Core {
 		if(!(1<= ledNum) || !(ledNum <= 4)) {  // for Anchor
 			LOGGER.severe("setLed: LED number " + ledNum + "not in range");
 		}
-		Data params = new SingleRegister();
-		Data data = new SingleRegister();
+		Data inputParams = new Data();  // 1 byte info
+		Data receiveData = new Data();  // 1 byte info: for receive return value from pozyx
 		
 		byte byteData;
 		if(state) {
@@ -109,8 +109,8 @@ public abstract class Lib extends Core {
 		}else {
 			byteData = (byte) ((0x01 << (byte) (4-1+ledNum)) | (((0x0 << (byte) (ledNum -1)) & (byte)0xFF)));
 		}
-		params.setData(String.format("%02x", byteData).toUpperCase());
-		return this.useFunction(Registers.LED_CONTROL, params, data, remoteId);
+		inputParams.setValue(0, String.format("%02x", byteData).toUpperCase());
+		return this.useFunction(Registers.LED_CONTROL, inputParams, receiveData, remoteId);
 	}
 	
 	public abstract int setWrite(byte address, Data data, String remoteId, double localDelay, double remoteDelay);
@@ -122,55 +122,77 @@ public abstract class Lib extends Core {
 		this.setWrite(Registers.UWB_CHANNEL, uwbRegisters, remoteId, 2 * Constants.DELAY_LOCAL_WRITE, 2 * Constants.DELAY_REMOTE_WRITE);
 	}
 	
-	public int getACCData(Data data) {
-		return getACCData(data, "None");
+	public int getXYZData(XYZ data, int index) {
+		return getXYZData(data, index, "None");
 	}
-	public int getACCData(Data data, String remoteId) {
-		data.setDataSize(6);
-		return this.getRead(Registers.ACCELERATION_X, data, remoteId);
+	public int getXYZData(XYZ data, int index, String remoteId) {
+		Data xyzData = new Data(data.getFormat());
+		int result;
+		switch (index) {
+		case 0:
+			result = this.getRead(Registers.ACCELERATION_X, xyzData, remoteId);
+			break;
+		case 1:
+			result = this.getRead(Registers.MAGNETIC_X, xyzData, remoteId);
+			break;
+		case 2:
+			result = this.getRead(Registers.GYRO_X, xyzData, remoteId);
+			break;
+		case 3:
+			result = this.getRead(Registers.LINEAR_ACCELERATION_X, xyzData, remoteId);
+			break;
+		case 4:
+			result = this.getRead(Registers.GRAVITY_VECTOR_X, xyzData, remoteId);
+			break;
+		default:
+			result = 0;
+			break;
+		}
+		data.importData(xyzData.exportData());
+		return result;
 	}
 	
-	public void doRanging(Data destinationId, Data deviceRange, String remoteId) {
-		int intFlag;
-		NetworkID netWorkId = new NetworkID(destinationId);
-		this.clearInterruptStatus();
-		
-		
-		if(remoteId.equals("None")) {
-			intFlag = Bitmasks.INT_STATUS_FUNC;
-		}else {
-			intFlag = Bitmasks.INT_STATUS_RX_DATA;
-		}
-		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
-		if(status == Constants.POZYX_SUCCESS) {
-			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
-		}
-		
-	}
+//	public void doRanging(Data destinationId, Data deviceRange, String remoteId) {
+//		int intFlag;
+//		NetworkID netWorkId = new NetworkID(destinationId);
+//		this.clearInterruptStatus();
+//		
+//		
+//		if(remoteId.equals("None")) {
+//			intFlag = Bitmasks.INT_STATUS_FUNC;
+//		}else {
+//			intFlag = Bitmasks.INT_STATUS_RX_DATA;
+//		}
+//		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
+//		if(status == Constants.POZYX_SUCCESS) {
+//			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
+//		}
+//		
+//	}
 
-	protected int checkForFlag(int interruptFlag, double timeout_s, Data interrupt) {
-		if(interrupt == null) {
-			interrupt = new SingleRegister();
-		}
-		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
-		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
-			
-		}
-		return 0;
-	}
+//	protected int checkForFlag(int interruptFlag, double timeout_s, Data interrupt) {
+//		if(interrupt == null) {
+//			interrupt = new SingleRegister();
+//		}
+//		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
+//		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
+//			
+//		}
+//		return 0;
+//	}
 
-	private boolean waitForFlagState(int interruptFlag, double timeout_s, Data interrupt) {
-		// TODO 自動生成されたメソッド・スタブ
-		if(interrupt == null) {
-			interrupt = new SingleRegister(); 
-		}
-		long start = System.currentTimeMillis();
-		while(start - System.currentTimeMillis() < timeout_s) {
-			int status = getInterruptStatus(interrupt, "None");
-			if(interrupt.getData(0) &) {
-				
-			}
-		}
-		return false;
-	}
+//	private boolean waitForFlagState(int interruptFlag, double timeout_s, Data interrupt) {
+//		// TODO 自動生成されたメソッド・スタブ
+//		if(interrupt == null) {
+//			interrupt = new SingleRegister(); 
+//		}
+//		long start = System.currentTimeMillis();
+//		while(start - System.currentTimeMillis() < timeout_s) {
+//			int status = getInterruptStatus(interrupt, "None");
+//			if(interrupt.getData(0) &) {
+//				
+//			}
+//		}
+//		return false;
+//	}
 }

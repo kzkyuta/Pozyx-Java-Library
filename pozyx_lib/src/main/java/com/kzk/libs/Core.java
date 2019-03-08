@@ -1,7 +1,7 @@
 package com.kzk.libs;
 
-import com.kzk.libs.structures.ByteStructure;
 import com.kzk.libs.structures.generic.Data;
+import com.kzk.libs.structures.generic.SingleRegister;
 
 
 public abstract class Core {

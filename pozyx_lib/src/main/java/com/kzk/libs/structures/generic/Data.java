@@ -1,63 +1,50 @@
 package com.kzk.libs.structures.generic;
 
-import com.kzk.libs.structures.ByteStructure;
+import java.util.ArrayList;
 
-//public abstract class Data extends ByteStructure {
+// this class can handle only a byte or two bytes data
 public class Data extends ByteStructure {
 	
-	protected static String data = "";
-	protected static int dataSize = 0;  // unit:byte
-	public String id = "None";
+	protected static int dataSize = 0;
+//	protected String id = "None";
 
 	public Data() {
-		this(data, dataSize);
-	}
-	public Data(String data) {
-		this(data, dataSize);
-	}
-	public Data(String data, int dataSize) {
-		this.data = data;
-		this.dataSize = dataSize;
-	}
-
-	public String getData() {
-		return data;
+		this.data.add("");
+		this.dataFormat = "B";
+		this.setPackedSize();
 	}
 	
-	public String getData(int num) {
-		return data.subString(0, num*2);
-	}
-
-	public void setData(String data) {
-		this.data = data;
-	}
-
-	public int getDataSize() {
-		return dataSize;
-	}
-
-	public void setDataSize(int dataSize) {
-		this.dataSize = dataSize;
+	public Data(String format) {
+		this.data.add("");
+		this.dataFormat = format;
+		this.setPackedSize();
 	}
 	
-	public int getACCData(int a) {
-		if(this.getData().length() != 12) {
-			System.out.println("This data is not for ACC");
-			return 0;
-		}
-		int outData = 0;
-		switch(a) {
-			case 0:
-				outData = Integer.parseInt(this.getData().substring(0, 4), 16);
-				break;
-			case 1:
-				outData = Integer.parseInt(this.getData().substring(4, 8), 16);
-				break;
-			case 2:
-				outData = Integer.parseInt(this.getData().substring(8, 12), 16);
-				break;
-		}
-		return outData;
+	// Stringのアレイデータを入力とするのは使えないんじゃない？
+	protected Data(ArrayList<String> data, String format) {
+		this.data = data;
+		this.dataFormat = format;
+		this.setPackedSize();
 	}
-
+	
+	public ArrayList<String> exportData(){
+		return this.data;
+	}
+	
+	public String getValue(int index) {
+		return data.get(index);
+	}
+	
+	public void setValue(int index, String s) {
+		this.data.set(index, s);
+	}
+	
+	@Override
+	public void load(ArrayList<String> receivedData) {
+		loadData(receivedData);  // received data tp this.data
+	}
+	
+	public String getFormat() {
+		return this.dataFormat;
+	}
 }

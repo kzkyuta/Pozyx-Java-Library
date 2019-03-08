@@ -21,12 +21,8 @@ public class Main {
 		// make an instance for serial communication.
 		PozyxSerial port = new PozyxSerial(PozyxSerial.getFirstPozyxSerialPort());
 		
-		// make an instance for the container of device data.
-		DeviceDetailes device = new DeviceDetailes();
-		
 		// to collect the device data from pozyx via Serial comunication
-		port.getDeviceDetails(device);
-		port.deviceCheck(device);  // print out the data.
+		port.printDeviceInfo("None");
 		
 		// LED control
 		// on 1 and 4 do not work on Pozyx Anchor.

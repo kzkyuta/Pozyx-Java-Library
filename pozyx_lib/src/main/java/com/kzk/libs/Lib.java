@@ -10,7 +10,8 @@ import com.kzk.libs.definitions.Constants;
 import com.kzk.libs.definitions.Registers;
 import com.kzk.libs.definitions.Bitmasks;
 import com.kzk.libs.structures.generic.Data;
-import com.kzk.libs.structures.device.NetworkID;
+import com.kzk.libs.structures.DeviceDetailes;
+import com.kzk.libs.structures.device.NetworkId;
 import com.kzk.libs.structures.device.UWBSettings;
 import com.kzk.libs.structures.device.DeviceRange;
 import com.kzk.libs.structures.generic.Generic;
@@ -52,26 +53,21 @@ public abstract class Lib extends Core {
 		return this.getRead(Registers.FIRMWARE_VERSION, firmware, remoteId);
 	}
 	
-//	public void printDeviceInfo(String remoteId) {
-//		SingleRegister firmware = new SingleRegister();
-//		int status = getFirmwareVersion(firmware, remoteId);
-//		NetworkID networkId; 
-//		if(remoteId == "None") {
-//			networkId = new NetworkID();
-//			this.getNetworkId(networkId);
-//		} else {
-//			networkId = new NetworkID(remoteId);
-//		}
-//		System.out.println("Device Information for device " + networkId.id);
-//		if(status != Constants.POZYX_SUCCESS) {
-//			System.out.println("\t- Error: Couldn't retrieve device information");  // TODO: change to worning
-//			return;
-//		}
-//		byte[] ver = Generic.hexStringToByteArray(firmware.getData());
-//		System.out.println("\t- Firmware version v" + (ver[0] >> 4) + "." + (ver[0] % 0x10));
-//	}
+	public void printDeviceInfo(String remoteId) {
+		DeviceDetailes firmware = new DeviceDetailes();
+		int status = this.getWhoAmI(firmware, remoteId);
+		if(status != 1) {
+			LOGGER.severe("Faled to get data from Pozyx");
+			return;
+		}
+		System.out.println(firmware.firmware_version_string() + "\n"
+				+ firmware.hardware_version_string() + "\n"
+				+ firmware.self_test_result() + "\n"
+				+ firmware.error_code() + "\n"
+				);
+	}
 	
-	public int getNetworkId(NetworkID networkId) {  // 
+	public int getNetworkId(NetworkId networkId) {  // 
 		return regRead(Registers.NETWORK_ID, networkId);
 	}
 	

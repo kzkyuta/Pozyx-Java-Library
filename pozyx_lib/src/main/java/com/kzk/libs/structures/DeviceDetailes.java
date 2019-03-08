@@ -25,4 +25,18 @@ public class DeviceDetailes extends Data{
 	public String hardware_version_string() {
 		return "\t- Hardware Version is v1." + this.convetHalfByteToInt(2, 1);
 	}
+	
+	public String self_test_result() {
+		if(!this.getValue(3).equals("3F")) {
+			return "\t- Self tests: something wrong. returned data is " + this.getValue(3) + ". Check \"https://www.pozyx.io/product-info/developer-tag/datasheet-register-overview\" " ;
+		}
+		return "\t- Self tests: ALL green!";
+	}
+	
+	public String error_code() {
+		if(!this.getValue(4).equals("00")) {
+			return "\t- Check Error Code:Returned value is " + this.getValue(3) + ". Check \"https://www.pozyx.io/product-info/developer-tag/datasheet-register-overview\" " ;
+		}
+		return "\t- Check Error Code: No error!";
+	}
 }

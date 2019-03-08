@@ -25,7 +25,8 @@ public class SingleRegister extends Data {
 		this(value, size, true);
 	}
 	
-	public void setValue(String s) {
+	@Override
+	public void setValue(int index, String s) {
 		this.data.set(0, s);
 	}
 	

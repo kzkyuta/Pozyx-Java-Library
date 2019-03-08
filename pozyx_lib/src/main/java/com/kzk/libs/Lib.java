@@ -7,6 +7,7 @@ import com.kzk.libs.structures.generic.Data;
 import com.kzk.libs.structures.generic.Generic;
 import com.kzk.libs.structures.generic.NetworkId;
 import com.kzk.libs.structures.generic.SingleRegister;
+import com.kzk.libs.structures.generic.XYZ;
 import com.kzk.libs.structures.generic.UWBSetting;
 
 import java.util.logging.Logger;
@@ -97,8 +98,8 @@ public abstract class Lib extends Core {
 		if(!(1<= ledNum) || !(ledNum <= 4)) {  // for Anchor
 			LOGGER.severe("setLed: LED number " + ledNum + "not in range");
 		}
-		Data params = new SingleRegister();  // 1 byte info
-		Data data = new SingleRegister();  // 1 byte info: for receive return value from pozyx
+		Data inputParams = new Data();  // 1 byte info
+		Data receiveData = new Data();  // 1 byte info: for receive return value from pozyx
 		
 		byte byteData;
 		if(state) {
@@ -106,8 +107,8 @@ public abstract class Lib extends Core {
 		}else {
 			byteData = (byte) ((0x01 << (byte) (4-1+ledNum)) | (((0x0 << (byte) (ledNum -1)) & (byte)0xFF)));
 		}
-		params.setData(String.format("%02x", byteData).toUpperCase());
-		return this.useFunction(Registers.LED_CONTROL, params, data, remoteId);
+		inputParams.setValue(0, String.format("%02x", byteData).toUpperCase());
+		return this.useFunction(Registers.LED_CONTROL, inputParams, receiveData, remoteId);
 	}
 	
 	public abstract int setWrite(byte address, Data data, String remoteId, double localDelay, double remoteDelay);
@@ -119,11 +120,33 @@ public abstract class Lib extends Core {
 		this.setWrite(Registers.UWB_CHANNEL, uwbRegisters, remoteId, 2 * Constants.DELAY_LOCAL_WRITE, 2 * Constants.DELAY_REMOTE_WRITE);
 	}
 	
-	public int getACCData(Data data) {
-		return getACCData(data, "None");
+	public int getXYZData(XYZ data, int index) {
+		return getXYZData(data, index, "None");
 	}
-	public int getACCData(Data data, String remoteId) {
-		data.setDataSize(6);
-		return this.getRead(Registers.ACCELERATION_X, data, remoteId);
+	public int getXYZData(XYZ data, int index, String remoteId) {
+		Data xyzData = new Data(data.getFormat());
+		int result;
+		switch (index) {
+		case 0:
+			result = this.getRead(Registers.ACCELERATION_X, xyzData, remoteId);
+			break;
+		case 1:
+			result = this.getRead(Registers.MAGNETIC_X, xyzData, remoteId);
+			break;
+		case 2:
+			result = this.getRead(Registers.GYRO_X, xyzData, remoteId);
+			break;
+		case 3:
+			result = this.getRead(Registers.LINEAR_ACCELERATION_X, xyzData, remoteId);
+			break;
+		case 4:
+			result = this.getRead(Registers.GRAVITY_VECTOR_X, xyzData, remoteId);
+			break;
+		default:
+			result = 0;
+			break;
+		}
+		data.importData(xyzData.exportData());
+		return result;
 	}
 }

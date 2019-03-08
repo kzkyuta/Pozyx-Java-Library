@@ -17,5 +17,4 @@ public class DeviceDetailes extends Data{
 	public String hardware_version_string() {
 		return "\t- Hardware Version is v1." + this.convetHalfByteToInt(2, 1);
 	}
-	
 }

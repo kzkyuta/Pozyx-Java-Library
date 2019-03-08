@@ -1,6 +1,8 @@
 package com.kzk.libs.structures.generic;
 
 import java.util.ArrayList;
+import java.nio.ByteBuffer;
+import javax.xml.bind.DatatypeConverter;
 
 public abstract class ByteStructure {
 
@@ -68,7 +70,7 @@ public abstract class ByteStructure {
 				tempArray.add(fourByte);
 			}else if(dataFormat.charAt(i) == 'h' | dataFormat.charAt(i) == 'H') {
 				String twoByte = "";
-				for(int ii = 0; ii < 4; ii++) {
+				for(int ii = 0; ii < 2; ii++) {
 					twoByte += inData.get(k);
 					k++;
 				}
@@ -101,5 +103,14 @@ public abstract class ByteStructure {
 	protected int convertByteDataToInt(int index) {
 		String s = this.data.get(index);
 		return Integer.parseInt(s, 16);
+	}
+	
+	protected short convertByteDataToShort(int index) {
+		String s = this.data.get(index);
+		byte[] bytes = DatatypeConverter.parseHexBinary(s);
+		short result = ByteBuffer.wrap(bytes).getShort();
+//		System.out.println(s);
+		return result;
+//		return Short.parseShort(s, 16);
 	}
 }

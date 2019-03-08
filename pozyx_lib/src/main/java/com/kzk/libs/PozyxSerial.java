@@ -251,12 +251,12 @@ public class PozyxSerial extends Lib {
 	}
 
 	@Override
-	public int regFunction(byte address, Data params, Data data){
-		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ params.getData() +","+ Integer.toString(params.getDataSize());
-		System.out.println(newData);
-		String result = serialExchanging(newData);
-		data.setData(result);
-		return Integer.parseInt(result.substring(0, 2), 16);  // TODO: implement try catch
+	public int regFunction(byte address, Data inputParams, Data data){
+		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ inputParams.getValue(0) +","+ Integer.toString(data.getDataSize());
+		System.out.println("Send Data:" + newData);
+		ArrayList<String> result = serialExchanging(newData);
+		data.load(result);
+		return Integer.parseInt(result.get(0), 16);  // TODO: implement try catch
 	}
 	
 	@Override
@@ -265,19 +265,19 @@ public class PozyxSerial extends Lib {
 	}
 	
 	@Override
-	public int useFunction(byte function, Data params, Data data, String remoteId) {
+	public int useFunction(byte function, Data inputParams, Data data, String remoteId) {
 		
 		if(!isFunctionCall(function)) {
 			if(!this.suppressWarnings) {  // TODO: what is suppressWarning ?
 				LOGGER.severe("Register " + function + " isn't a function register");
 			}
 		}
-//		params = (params == null) ? new SingleRegister() : params;
+		inputParams = (inputParams == null) ? new SingleRegister() : inputParams;
 //		data = (data == null) ?	new SingleRegister(): data;
 		if(remoteId.equals("None")) {
-			return this.regFunction(function, params, data);
+			return this.regFunction(function, inputParams, data);
 		}else {
-			return this.regRemoteFunction(remoteId, function, params, data);
+			return this.regRemoteFunction(remoteId, function, inputParams, data);
 		}
 	}
 	

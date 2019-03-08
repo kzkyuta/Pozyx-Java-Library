@@ -1,6 +1,7 @@
 package com.kzk.libs.structures.generic;
 
 import java.util.ArrayList;
+import com.kzk.libs.structures.ByteStructure;
 
 public class XYZ extends ByteStructure{
 	int[] xyzData = new int[3];

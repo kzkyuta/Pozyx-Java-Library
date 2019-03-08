@@ -1,6 +1,8 @@
 package com.kzk.libs.structures.device;
 
 import com.kzk.libs.structures.ByteStructure;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -15,14 +17,12 @@ import java.util.Arrays;
  */
 
 public class DeviceRange extends ByteStructure{
-	public int byte_size = 10;
-    public String data_format = "IIh";
     public int timestamp;
     public int distance;
     public int rss;
-    public int[] data = new int[3];
     
-    public DeviceRange() {	
+    public DeviceRange() {
+    	this.dataFormat = "bIIh";
     	this.timestamp = 0;
     	this.distance = 0;
     	this.rss = 0;
@@ -32,21 +32,17 @@ public class DeviceRange extends ByteStructure{
     	this.timestamp = timestamp;
     	this.distance = distance;
     	this.rss = rss;
-    	data = new int [] {this.timestamp, this.distance, this.rss};
+    	updateData(); 
     }
-    public void load(int[] data) {
-    	this.data = data;
-    	this.timestamp = data[0];
-    	this.distance = data[1];
-    	this.rss = data[2];
+    
+    public void load(ArrayList<String> receivedData) {
+    	loadData(receivedData);
+    	this.timestamp = convertByteDataToInt(1);
+    	this.distance = convertByteDataToInt(2);
+    	this.rss = convertByteDataToInt(3);
 	}
-    public void update_data(int[] data) {
-    	// TODO:try catch
-		if(Arrays.equals(this.data, data)) {
-			this.data[0] = this.timestamp;
-			this.data[1] = this.distance;
-			this.data[2] = this.rss;
-		}
+    public void updateData() {
+    	
     }
     public void showDeviceRange() {
 		System.out.println(this.timestamp + "ms, " + this.distance + "mm, " + this.rss + "dBm");

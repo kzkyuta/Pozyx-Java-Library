@@ -22,7 +22,7 @@ public abstract class Core {
 	
 	abstract int clearInterruptStatus();
 	
-	abstract int getInterruptStatus(Data interrupt, String remoteId);
+	abstract int getInterruptStatus(SingleRegister interrupt, String remoteId);
 	
 //	abstract int getRead(byte address, Data data, String remoteId);
 }

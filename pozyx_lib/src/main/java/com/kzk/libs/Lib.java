@@ -148,47 +148,48 @@ public abstract class Lib extends Core {
 		return result;
 	}
 	
-//	public void doRanging(Data destinationId, Data deviceRange, String remoteId) {
-//		int intFlag;
-//		NetworkID netWorkId = new NetworkID(destinationId);
-//		this.clearInterruptStatus();
-//		
-//		
-//		if(remoteId.equals("None")) {
-//			intFlag = Bitmasks.INT_STATUS_FUNC;
-//		}else {
-//			intFlag = Bitmasks.INT_STATUS_RX_DATA;
-//		}
-//		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
-//		if(status == Constants.POZYX_SUCCESS) {
-//			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
-//		}
-//		
-//	}
+	public void doRanging(String destinationId, Data deviceRange, String remoteId) {
+		int intFlag;
+		NetworkId netWorkId = new NetworkId(destinationId);
+		this.clearInterruptStatus();
+		
+		if(remoteId.equals("None")) {
+			intFlag = Bitmasks.INT_STATUS_FUNC;
+		}else {
+			intFlag = Bitmasks.INT_STATUS_RX_DATA;
+		}
+		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
+		if(status == Constants.POZYX_SUCCESS) {
+			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
+		}
+		
+	}
 
-//	protected int checkForFlag(int interruptFlag, double timeout_s, Data interrupt) {
-//		if(interrupt == null) {
-//			interrupt = new SingleRegister();
-//		}
-//		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
-//		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
-//			
-//		}
-//		return 0;
-//	}
+	protected int checkForFlag(int interruptFlag, double timeout_s, SingleRegister interrupt) {
+		// Performs waitForFlag_safe and checks against errors or timeouts.
+		if(interrupt == null) {
+			interrupt = new SingleRegister();
+		}
+		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
+		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
+			
+		}
+		return 0;
+	}
 
-//	private boolean waitForFlagState(int interruptFlag, double timeout_s, Data interrupt) {
-//		// TODO 自動生成されたメソッド・スタブ
-//		if(interrupt == null) {
-//			interrupt = new SingleRegister(); 
-//		}
-//		long start = System.currentTimeMillis();
-//		while(start - System.currentTimeMillis() < timeout_s) {
-//			int status = getInterruptStatus(interrupt, "None");
-//			if(interrupt.getData(0) &) {
-//				
-//			}
-//		}
-//		return false;
-//	}
+	private boolean waitForFlagState(int interruptFlag, double timeout_s, SingleRegister interrupt) {
+		//Performs waitForFlag in polling mode.
+		if(interrupt == null) {
+			interrupt = new SingleRegister(); 
+		}
+		long start = System.currentTimeMillis();
+		while(start - System.currentTimeMillis() < timeout_s) {
+			int status = getInterruptStatus(interrupt, "None");
+			byte[] a = interrupt.getByteArrayData(0);
+			if(a[0] & ) {
+				
+			}
+		}
+		return false;
+	}
 }

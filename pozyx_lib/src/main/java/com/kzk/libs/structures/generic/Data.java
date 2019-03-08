@@ -1,13 +1,17 @@
 package com.kzk.libs.structures.generic;
 
 import java.util.ArrayList;
+import com.kzk.libs.structures.ByteStructure;
 
 // this class can handle only a byte or two bytes data
 public class Data extends ByteStructure {
 	
 	protected static int dataSize = 0;
 //	protected String id = "None";
-
+	
+	// the relation ship between dataFormat and datais below 
+	// data = ["33", "3333", "33333333", "33333333"]
+	// dataFormat = "bhif";
 	public Data() {
 		this.data.add("");
 		this.dataFormat = "B";
@@ -41,7 +45,7 @@ public class Data extends ByteStructure {
 	
 	@Override
 	public void load(ArrayList<String> receivedData) {
-		loadData(receivedData);  // received data tp this.data
+		this.loadData(receivedData);  // received data tp this.data
 	}
 	
 	public String getFormat() {

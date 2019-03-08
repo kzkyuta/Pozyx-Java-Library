@@ -290,7 +290,7 @@ public class PozyxSerial extends Lib {
 		return getInterruptStatus(interrupt, "None");
 	}
 	
-	public int getInterruptStatus(Data interrupt, String remoteId) {
+	public int getInterruptStatus(SingleRegister interrupt, String remoteId) {
 		return getRead(Registers.INTERRUPT_STATUS, interrupt, remoteId);
 	}
 	

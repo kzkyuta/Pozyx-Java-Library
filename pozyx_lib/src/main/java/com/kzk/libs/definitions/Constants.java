@@ -10,6 +10,8 @@ public class Constants {
 	public static final double DELAY_REMOTE_WRITE = 0.005;
 	
 	public static final double DELAY_INTERRUPT = 0.1;
+	public static final double DELAY_POLLING_FAST = 0.0005;
+	public static final long DELAY_POLLING_MIDDLE = 1;  // ms
 
 	
 	/*

@@ -20,7 +20,7 @@ public abstract class Core {
 	
 	abstract int useFunction(byte function, Data params, Data data, String remoteId);
 	
-	abstract int clearInterruptStatus();
+	abstract int clearInterruptStatus(SingleRegister data);
 	
 	abstract int getInterruptStatus(SingleRegister interrupt, String remoteId);
 	

@@ -148,36 +148,47 @@ public abstract class Lib extends Core {
 		return result;
 	}
 	
-	public void doRanging(String destinationId, Data deviceRange, String remoteId) {
-		int intFlag;
+	public int doRanging(String destinationId, DeviceRange deviceRange, String remoteId) {
+		byte interruptFlag;
 		NetworkId netWorkId = new NetworkId(destinationId);
-		this.clearInterruptStatus();
+		SingleRegister interruptData = new SingleRegister();
+		Data a = new Data("B");  // It will contain the result if useFunction was successed or not.
+		this.clearInterruptStatus(interruptData);
 		
 		if(remoteId.equals("None")) {
-			intFlag = Bitmasks.INT_STATUS_FUNC;
+			interruptFlag = Bitmasks.INT_STATUS_FUNC;
 		}else {
-			intFlag = Bitmasks.INT_STATUS_RX_DATA;
+			interruptFlag = Bitmasks.INT_STATUS_RX_DATA;
 		}
-		int status = this.useFunction(Registers.DO_RANGING, netWorkId, deviceRange, remoteId);
+		int status = this.useFunction(Registers.DO_RANGING, netWorkId, a, remoteId);
 		if(status == Constants.POZYX_SUCCESS) {
-			status = this.checkForFlag(intFlag, Constants.DELAY_INTERRUPT, null);
+			status = this.checkForFlag(interruptFlag, Constants.DELAY_INTERRUPT, interruptData);
+			if(status == Constants.POZYX_SUCCESS) {
+				getDeviceRangeInfo(netWorkId, deviceRange, remoteId);
+			}
+			return status;
 		}
-		
+		return Constants.POZYX_FAILURE;
 	}
 
-	protected int checkForFlag(int interruptFlag, double timeout_s, SingleRegister interrupt) {
+	protected int checkForFlag(byte interruptFlag, double timeout_s, SingleRegister interrupt) {
 		// Performs waitForFlag_safe and checks against errors or timeouts.
 		if(interrupt == null) {
 			interrupt = new SingleRegister();
 		}
-		int errorInterruptMask = Bitmasks.INT_MASK_ERR;
-		if(waitForFlagState(interruptFlag | errorInterruptMask, timeout_s, interrupt)) {
-			
+		byte errorInterruptMask = Bitmasks.INT_MASK_ERR;
+		if(waitForFlagState((byte) (interruptFlag | errorInterruptMask), timeout_s, interrupt)) {
+			if((interrupt.getByteValue() & errorInterruptMask) == errorInterruptMask) {
+				return Constants.POZYX_FAILURE;
+			}else {
+				return Constants.POZYX_SUCCESS;
+			}
+		}else {
+			return Constants.POZYX_TIMEOUT;
 		}
-		return 0;
 	}
 
-	private boolean waitForFlagState(int interruptFlag, double timeout_s, SingleRegister interrupt) {
+	private boolean waitForFlagState(byte interruptFlag, double timeout_s, SingleRegister interrupt) {
 		//Performs waitForFlag in polling mode.
 		if(interrupt == null) {
 			interrupt = new SingleRegister(); 
@@ -185,11 +196,23 @@ public abstract class Lib extends Core {
 		long start = System.currentTimeMillis();
 		while(start - System.currentTimeMillis() < timeout_s) {
 			int status = getInterruptStatus(interrupt, "None");
-			byte[] a = interrupt.getByteArrayData(0);
-			if(a[0] & ) {
-				
+			byte a = interrupt.getByteValue();
+			if(((a & interruptFlag) != 0) && (status == Constants.POZYX_SUCCESS)) {
+				return true;
+			}
+			try {
+				Thread.sleep(1);  // ms
+			} catch (InterruptedException e) {
+				System.out.println("stopped");
 			}
 		}
 		return false;
+	}
+	
+	private int getDeviceRangeInfo(NetworkId destinationId, DeviceRange RangeData, String remoteId) {
+		Data tempData = new Data(RangeData.getFormat());
+		int result = useFunction(Registers.GET_DEVICE_RANGE_INFO, destinationId, tempData, remoteId);
+		RangeData.load(tempData.exportData());
+		return result;
 	}
 }

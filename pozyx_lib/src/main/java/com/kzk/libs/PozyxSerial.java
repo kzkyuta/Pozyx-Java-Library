@@ -56,6 +56,7 @@ public class PozyxSerial extends Lib {
 	private SerialPort ser = null;
 	
 	private BufferedReader buffReader = null;
+	private InputStream in = null;
 
 	public PozyxSerial(String port, int baudrate, int timeout, int writeTimeout, boolean printOutput,
 			boolean debugTrace, boolean showTrace, boolean suppressWarnings, int dataBits, int stopBits) {
@@ -186,12 +187,14 @@ public class PozyxSerial extends Lib {
 		} else {
 			this.ser = getPortObject(port);
 			this.ser.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, timeout, writeTimeout);
+//			this.ser.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
 			this.ser.setComPortParameters(baudrate, DEFAULT_DATABITS, DEFAULT_STOPBITS, SerialPort.NO_PARITY);
 			// TODO: check timeout mode
 		}
 		this.ser.openPort();
 		
 		buffReader = new BufferedReader(new InputStreamReader(this.ser.getInputStream()));
+		in = ser.getInputStream();
 	}
 
 	public void validatePozyx() { // confirm if the received data is 43 or not.		
@@ -204,20 +207,31 @@ public class PozyxSerial extends Lib {
 		}
 	}
 	
-	public ArrayList<String> serialExchanging(String s) {
+	public ArrayList<String> serialExchanging(String s, int byteNum) {
 		ArrayList<String> outString = new ArrayList<String>();
 		String newString = s + NEW_LINE;  // input data
-		
 		byte[] newStringB = newString.getBytes();  // cast input data to byte type 
 		this.ser.writeBytes(newStringB, newStringB.length); // send data.
+		StringBuilder receivedData = new StringBuilder();
 		
+		while(ser.bytesAvailable() < ((byteNum*2)+4)) {};
 		try {
-			String receivedData = buffReader.readLine(); // get received data, and Deleted the initial "D,"
-			for(int i = 1; i < receivedData.length()/2; i++) {
-				outString.add(receivedData.substring(i*2, i*2+2));
+//			String receivedData = buffReader.readLine();
+			int num = ser.bytesAvailable();
+			for(int j = 0; j <= (byteNum*2) + 2; j++) {
+				receivedData.append((char)in.read());
+//				byte[] readBuffer = new byte[ser.bytesAvailable()];
+//				receivedData.append((char)ser.readBytes(readBuffer, readBuffer.length));
+			}
+			ser.readBytes(newStringB, ser.bytesAvailable());
+			if(!receivedData.toString().contains("D,")) {
+				System.out.println("The response to " + s + " is " + receivedData.toString());
+			}
+			for(int i = 1; i < receivedData.toString().length()/2; i++) {
+				outString.add(receivedData.toString().substring(i*2, i*2+2));
 			}
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
+			//TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		return outString;
@@ -231,7 +245,7 @@ public class PozyxSerial extends Lib {
 		 */
 		// To make signal, input data is prepared with newData
 		String newData = "R," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getByteSize());
-		ArrayList<String> result = serialExchanging(newData);  // send a readMessage, and get a response from Pozyx device.
+		ArrayList<String> result = serialExchanging(newData, data.getByteSize());  // send a readMessage, and get a response from Pozyx device.
 		
 		data.load(result); // update the data
 		return Constants.POZYX_SUCCESS;  // // TODO: implement try catch
@@ -256,9 +270,8 @@ public class PozyxSerial extends Lib {
 
 	@Override
 	public int regFunction(byte address, Data inputParams, Data data){
-		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ inputParams.getValue(0) +","+ Integer.toString(data.getDataSize());
-		System.out.println("Send Data:" + newData);
-		ArrayList<String> result = serialExchanging(newData);
+		String newData = "F," + (String.format("%02x", address)).toUpperCase() +","+ inputParams.getValue(0) +","+ Integer.toString(data.getByteSize());
+		ArrayList<String> result = serialExchanging(newData, data.getByteSize());
 		data.load(result);
 		return Integer.parseInt(result.get(0), 16);  // TODO: implement try catch
 	}
@@ -279,15 +292,14 @@ public class PozyxSerial extends Lib {
 		inputParams = (inputParams == null) ? new SingleRegister() : inputParams;
 //		data = (data == null) ?	new SingleRegister(): data;
 		if(remoteId.equals("None")) {
-			return this.regFunction(function, inputParams, data);
+			return  this.regFunction(function, inputParams, data);
 		}else {
 			return this.regRemoteFunction(remoteId, function, inputParams, data);
 		}
 	}
 	
-	public int clearInterruptStatus() {
-		SingleRegister interrupt = new SingleRegister();
-		return getInterruptStatus(interrupt, "None");
+	public int clearInterruptStatus(SingleRegister data) {
+		return getInterruptStatus(data, "None");
 	}
 	
 	public int getInterruptStatus(SingleRegister interrupt, String remoteId) {

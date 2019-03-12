@@ -1,5 +1,7 @@
 package com.kzk.libs.structures.generic;
 
+import javax.xml.bind.DatatypeConverter;
+
 import com.kzk.libs.structures.generic.Data;
 
 public class SingleRegister extends Data {
@@ -34,5 +36,12 @@ public class SingleRegister extends Data {
 	
 	public String getValue() {
 		return data.get(0);
+	}
+	
+	public byte getByteValue() {
+		byte[] results;
+		String s = data.get(0);
+		results = DatatypeConverter.parseHexBinary(s);
+		return results[0];
 	}
 }

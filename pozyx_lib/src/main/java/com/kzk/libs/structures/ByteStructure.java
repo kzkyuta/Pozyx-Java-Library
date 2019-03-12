@@ -45,12 +45,16 @@ public abstract class ByteStructure {
 		this.byteSize = newFormat.length(); 
 	}
 	
-	public int getByteSize() {
+	public int getByteSize() {  // return size of byte scale 
 		return this.byteSize;
 	}
 	
-	public int getDataSize() {
+	public int getDataSize() {  // return the number of data information. 
 		return this.data.size();
+	}
+	
+	public String getFormat() {
+		return this.dataFormat;
 	}
 	
 	public abstract void load(ArrayList<String> data);  // the way to process data is depend on the class.

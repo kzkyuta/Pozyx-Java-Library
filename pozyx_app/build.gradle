@@ -31,4 +31,7 @@ jar {
 		'Main-Class': 'com.kzk.apps.Main'
 		)
 	}
+run {
+    standardInput = System.in
+	}
 }

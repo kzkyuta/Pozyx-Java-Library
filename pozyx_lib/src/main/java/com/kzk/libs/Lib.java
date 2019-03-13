@@ -148,6 +148,10 @@ public abstract class Lib extends Core {
 		return result;
 	}
 	
+	public int setRangingProtocol(SingleRegister protocol, String remoteId) {
+		return setWrite(Registers.RANGING_PROTOCOL, protocol, remoteId, Constants.DELAY_LOCAL_WRITE, Constants.DELAY_REMOTE_WRITE);
+	}
+	
 	public int doRanging(String destinationId, DeviceRange deviceRange, String remoteId) {
 		byte interruptFlag;
 		NetworkId netWorkId = new NetworkId(destinationId);

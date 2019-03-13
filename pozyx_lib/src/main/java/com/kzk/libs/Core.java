@@ -8,7 +8,7 @@ public abstract class Core {
 
 	abstract int regRead(byte address, Data data);
 	
-	abstract int regWrite(byte address, Data data);
+	abstract int regWrite(byte address, SingleRegister data);
 	
 	abstract int remoteRegWrite(String remoteId, byte address, Data data);
 	

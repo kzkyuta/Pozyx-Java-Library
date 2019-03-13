@@ -251,11 +251,26 @@ public class PozyxSerial extends Lib {
 		return Constants.POZYX_SUCCESS;  // // TODO: implement try catch
 	}
 	
+	public int setWrite(byte address, SingleRegister data, String remoteId, double localDelay, double remoteDelay) {
+		int status;
+		if(remoteId.equals("None")) {
+			status = this.regWrite(address, data);
+//			Thread.sleep(250); sleep(localDeray)
+		}else {
+			status = this.remoteRegWrite(remoteId, address, data);
+//			Thread.sleep(250); sleep(remoteDeray)
+		}
+		return status;
+	}
+	
 	@Override
-	public int regWrite(byte address, Data data) {
-		String newData = "W" + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
-		byte[] newStringB = newData.getBytes();
-		this.ser.writeBytes(newStringB, newStringB.length);
+	public int regWrite(byte address, SingleRegister data) {
+		String newData = "W," + (String.format("%02x", address)).toUpperCase() +","+ Integer.toString(data.getDataSize());
+		System.out.println("NewData: " + newData);
+		ArrayList<String> result = serialExchanging(newData, data.getByteSize());  // send a readMessage, and get a response from Pozyx device.
+//		byte[] newStringB = newData.getBytes();
+//		this.ser.writeBytes(newStringB, newStringB.length);
+		System.out.println("result: " + result);
 		return Constants.POZYX_SUCCESS;
 	}
 	@Override
@@ -321,17 +336,5 @@ public class PozyxSerial extends Lib {
 	public void deviceCheck(DeviceDetailes device) {
 		System.out.println(device.firmware_version_string());
 		System.out.println(device.hardware_version_string());
-	}
-	
-	public int setWrite(byte address, Data data, String remoteId, double localDelay, double remoteDelay) {
-		int status;
-		if(remoteId.equals("None")) {
-			status = this.regWrite(address, data);
-//			Thread.sleep(250); sleep(localDeray)
-		}else {
-			status = this.remoteRegWrite(remoteId, address, data);
-//			Thread.sleep(250); sleep(remoteDeray)
-		}
-		return status;
 	}
 }

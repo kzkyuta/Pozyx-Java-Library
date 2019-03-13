@@ -109,13 +109,13 @@ public abstract class Lib extends Core {
 		return this.useFunction(Registers.LED_CONTROL, inputParams, receiveData, remoteId);
 	}
 	
-	public abstract int setWrite(byte address, Data data, String remoteId, double localDelay, double remoteDelay);
+	public abstract int setWrite(byte address, SingleRegister data, String remoteId, double localDelay, double remoteDelay);
 	
 	public void setUWBSetting(UWBSettings uwbSetting, String remoteId, boolean saveToFlash) {
 		
 		Data gainRegister = new Data(String.valueOf(uwbSetting.gain_db));
 		Data uwbRegisters = new Data(String.valueOf(uwbSetting.channnel) + String.valueOf(uwbSetting.bitrate + (uwbSetting.prf << 6)));
-		this.setWrite(Registers.UWB_CHANNEL, uwbRegisters, remoteId, 2 * Constants.DELAY_LOCAL_WRITE, 2 * Constants.DELAY_REMOTE_WRITE);
+//		this.setWrite(Registers.UWB_CHANNEL, uwbRegisters, remoteId, 2 * Constants.DELAY_LOCAL_WRITE, 2 * Constants.DELAY_REMOTE_WRITE);
 	}
 	
 	public int getXYZData(XYZ data, int index) {
